@@ -80,3 +80,34 @@ import lilcache
 lilcache.init(loglevel='DEBUG')     # log file will be stored under root
 lilcache.set('a', 'b')
 ```
+
+## Inter process communication approaches
+
+### IPC with FIFO
+1. P1 creates FIFO (named pipe)
+2. Other processes communicate to P1 about operations (get/set/delete)
+3. P1 acts as master process and manages the state in memory (but what if it exists, electing new master?)
+4. P1 will be responsible for creating cache snapshots
+
+#### What if P1 (manager process) exists
+1. Need election algorithm (think more!)
+2. To retain the state of cache in newly elected manager (P2), we need to maintain list of set/delete operations
+3. This list of operations will be optimized (sort of tree shaking) time to time
+
+
+### IPC with sockets
+1. P1 creates local socket
+2. Other processes communicate to P1 about operations (get/set/delete)
+3. P1 acts as master process and manages the state in memory (but what if it exists, electing new master?)
+4. P1 will be responsible for creating snapshots
+
+#### What if P1 (manager process) exists
+1. Need election algorithm (think more!)
+2. To retain the state of cache in newly elected manager (P2), we need to maintain list of set/delete operations
+3. This list of operations will be optimized (sort of tree shaking) time to time
+
+
+### "Incoordinated" cache | No IPC
+1. No concept of master process
+2. Each process will read from disk (get/set/delete)
+3. Each process can have a local in-memory cache (but problem of synchronization)
