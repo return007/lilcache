@@ -1,5 +1,7 @@
 # Design
 
+## Requirements
+
 1. Multi process and thread safe cache
 
 ```
@@ -61,4 +63,20 @@ $ curl localhost:5001/get?key=a
 'b'
 $ curl localhost:5001/set?key=a&value=b
 OK
+```
+
+7. Cache path
+
+```
+import lilcache
+lilcache.init('foo_cache', root='/home/user/secured-directory')
+lilcache.set('password', 'hello123')
+```
+
+8. Logging
+
+```
+import lilcache
+lilcache.init(loglevel='DEBUG')     # log file will be stored under root
+lilcache.set('a', 'b')
 ```
