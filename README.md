@@ -17,4 +17,6 @@ It is not ready for production use.  If you like taking risks, I won't stop you 
  - [ ] For each implementation, perform benchmark tests and stress testing
  - [ ] Release to PyPi
  - [ ] Implementation 4: Named PIPE based approach and full duplex communication
+ - [ ] Add more features (snapshot, Cache expiry, etc.)
  - [ ] Production ready code
+ 
