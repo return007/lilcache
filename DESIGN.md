@@ -86,7 +86,7 @@ lilcache.set('a', 'b')
 ### IPC with FIFO
 1. P1 creates FIFO (named pipe)
 2. Other processes communicate to P1 about operations (get/set/delete)
-3. P1 acts as master process and manages the state in memory (but what if it exists, electing new master?)
+3. P1 acts as master process and manages the state in memory (but what if it exits, electing new master?)
 4. P1 will be responsible for creating cache snapshots
 
 #### What if P1 (manager process) exists
@@ -98,7 +98,7 @@ lilcache.set('a', 'b')
 ### IPC with sockets
 1. P1 creates local socket
 2. Other processes communicate to P1 about operations (get/set/delete)
-3. P1 acts as master process and manages the state in memory (but what if it exists, electing new master?)
+3. P1 acts as master process and manages the state in memory (but what if it exits, electing new master?)
 4. P1 will be responsible for creating snapshots
 
 #### What if P1 (manager process) exists
