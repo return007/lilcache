@@ -14,6 +14,9 @@ BUFFER_SIZE = 2048
 ENCODING = "utf-8"
 DELIMITER = b"<<->>"
 END_LIMIT = b"<<=>>"
+NONE_VALUE = pickle.dumps(None)
+RESPONSE_OK = b"OK"
+RESPONSE_ERROR = b"ERR"
 
 
 def _handler(conn, cache_path, snapshot, expires):
@@ -50,17 +53,22 @@ def manager(sock_path, cache_path, snapshot, expires, poolsize):
         args = decode_payload(packet)
         if args[0] == b'GET':
             key = args[1].decode(ENCODING)
-            value = cache.get(key)
-            payload = create_payload(b"RES", BUFFER_SIZE, value)
+            value = cache.get(key, NONE_VALUE)
+            payload = create_payload(RESPONSE_OK, BUFFER_SIZE, value)
         elif args[0] == b'SET':
             key = args[1].decode(ENCODING)
             value = args[2]
-            cache[key] = value
-            payload = create_payload(b"RES", BUFFER_SIZE, b'OK')
-        elif args[0] == 'POP':
+            try:
+                cache[key] = value
+            except Exception as e:
+                payload = create_payload(RESPONSE_ERROR, BUFFER_SIZE,
+                                         pickle.dumps(e))
+            else:
+                payload = create_payload(RESPONSE_OK, BUFFER_SIZE)
+        elif args[0] == b'POP':
             key = args[1].decode(ENCODING)
-            value = cache.pop(key)
-            payload = create_payload(b"RES", BUFFER_SIZE, value)
+            value = cache.pop(key, NONE_VALUE)
+            payload = create_payload(RESPONSE_OK, BUFFER_SIZE, value)
         else:
             print("Invalid operation")
             payload = []
@@ -92,6 +100,7 @@ def init(
     import threading
     mgr = threading.Thread(target=manager,
                            args=(sock_path, cache_path, snapshot, expires, poolsize))
+    mgr.setDaemon(True)
     mgr.start()
     # manager(sock_path, cache_path, snapshot, expires, poolsize)
     return
@@ -112,7 +121,10 @@ def establish_connection():
 
 def create_payload(operation, packet_size, *args):
     contents = DELIMITER.join(args)
-    packet = operation + DELIMITER + contents + END_LIMIT
+    if contents:
+        packet = operation + DELIMITER + contents + END_LIMIT
+    else:
+        packet = operation + END_LIMIT
     if len(packet) < packet_size:
         yield packet
         return
@@ -140,7 +152,7 @@ def get(key):
 
     args = decode_payload(response)
 
-    if args[0] == b'RES':
+    if args[0] == RESPONSE_OK:
         return pickle.loads(args[1])
     else:
         print("Some error occurred!")
@@ -157,7 +169,12 @@ def set(key, value):
     while not is_last(packet):
         packet = conn.recv(BUFFER_SIZE)
         response += packet
-    print(response)
+
+    args = decode_payload(response)
+    if args[0] == RESPONSE_OK:
+        return True
+    elif args[0] == RESPONSE_ERROR:
+        raise pickle.loads(args[1])
 
 
 def pop(key):
@@ -172,7 +189,7 @@ def pop(key):
         response += packet
 
     args = decode_payload(response)
-    if args[0] == b'RES':
+    if args[0] == RESPONSE_OK:
         return pickle.loads(args[1])
     else:
         print("Some error occurred!")
@@ -181,4 +198,4 @@ def pop(key):
 
 def destroy():
     sock_path = STATE["sock_path"]
-    os.unlink(sock_path)
+    os.remove(sock_path)
