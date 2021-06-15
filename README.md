@@ -1,10 +1,27 @@
 # lilcache
 
+[![PyPI version lilcache](https://img.shields.io/pypi/v/lilcache.svg)](https://pypi.python.org/pypi/lilcache/)
+[![PyPI license](https://img.shields.io/pypi/l/lilcache.svg)](https://pypi.python.org/pypi/lilcache/)
+
 ## Interprocess and thread safe light weight cache
 
 **Note:**
 This is under development and has bad performance (concurrency, response time, error prone, etc. you name it!). 
 It is not ready for production use.  If you like taking risks, I won't stop you from using it.
+
+## How to
+
+```
+$ pip install lilcache
+
+$ python
+>>> import lilcache
+>>> lilcache.init()
+>>> lilcache.set('foo', 'bar')
+True
+>>> lilcache.get('foo')
+'bar'
+```
 
 ## Timeline
 
