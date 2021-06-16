@@ -28,6 +28,7 @@ True
 ### lilcache vs redis
 
 **Note: lilcache was running without connection pool**
+
 For obvious reasons, redis is performing better than lilcache and
 the performance gap increases a lot with increasing concurrency.
 
@@ -65,8 +66,11 @@ $ python3 tests/benchmarks/performance.py
  - [ ] Implementation 2: Twisted bsaed concurrency
  - [ ] Implementation 3: Incordinated cache (file db + locks for synchronization)
  - [ ] For each implementation, perform benchmark tests and stress testing
- - [ ] Release to PyPi
+ - [X] Release to PyPi (pre-alpha release done)
  - [ ] Implementation 4: Named PIPE based approach and full duplex communication
  - [ ] Add more features (snapshot, Cache expiry, etc.)
  - [ ] Production ready code
  
+## Contributing
+
+Contributions are welcome!  For more details, please read the [CONTRIBUTING.md](CONTRIBUTING.md)
